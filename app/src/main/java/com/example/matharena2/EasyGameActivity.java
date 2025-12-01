@@ -56,9 +56,20 @@ public class EasyGameActivity extends AppCompatActivity {
     }
 
     private void generateEasyTask() {
-        // TU KIEDYŚ: generowanie prostych zadań (np. dodawanie do 10)
-        // Na razie tylko tekst przykładowy:
-        textTask.setText("2 + 3 = ?");
+        Random random = new Random();
+
+        //losowanie dwoch liczb z zakresu 1-10
+        int a = random.nextInt(10)+ 1;
+        int b = random.nextInt(10)+1;
+
+        // obliczanie wyniku
+        int result = a + b;
+
+        String taskText = a + " + " + b + " =? ";
+
+        // wyświetlanie na ekraknie
+        textTask.setText(taskText);
+
     }
 
     private void setupEasyTimer() {
