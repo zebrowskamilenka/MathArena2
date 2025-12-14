@@ -4,22 +4,17 @@
     android:gravity="center"
     android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/tlo">
 
-    <TextView
-        android:id="@+id/textLevelTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Poziom: Łatwy"
-        android:textSize="24sp"
-        android:layout_marginBottom="12dp" />
+
 
     <ImageView
         android:id="@+id/imageMonsterEasy"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginBottom="12dp"
-        android:src="@drawable/p1"
+        android:src="@drawable/p1e"
         android:contentDescription="Potworek" />
 
     <TextView
@@ -34,15 +29,26 @@
         android:id="@+id/textTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Czas: 00:10"
+        android:text="Time: 00:10"
         android:textSize="18sp"
         android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/textScore"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/editAnswer"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:text="Punkty: 0"
-        android:textSize="18sp" />
+        android:hint="Wpisz odpowiedź"
+        android:inputType="number"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:drawable/edit_text" />
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="OK" />
+
 
 </LinearLayout>
