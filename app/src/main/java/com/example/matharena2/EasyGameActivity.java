@@ -1,10 +1,12 @@
-package com.example.matharena2; // dostosuj do swojego pakietu
+package com.example.matharena2;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,19 +16,30 @@ import java.util.Random;
 public class EasyGameActivity extends AppCompatActivity {
 
     private ImageView imageMonsterEasy;
-    private TextView textLevelTitle;
     private TextView textTask;
-    private TextView textTimer;
+    private TextView textTimer;     // czas
+    private TextView textPoints;    // punkty
+    private ProgressBar progressHp; // pasek HP
     private EditText editAnswer;
     private Button btnOk;
 
-
-    // poprwana odpowiedz i punkty
+    // logika zadania
     private int correctAnswer = 0;
     private int points = 0;
 
+    // HP potworka
+    private int monsterHp = 100;
+    private final int damagePerCorrect = 20;
 
-    // BAZA potworków dla ŁATWEGO poziomu
+    // punkty
+    private final int POINTS_CORRECT = 20;
+    private final int POINTS_WRONG = 5;
+
+    // timer
+    private CountDownTimer countDownTimer;
+    private static final int TIME_LIMIT_MS = 15000; // 15 sekund
+
+    // potworki
     private final int[] easyMonsters = {
             R.drawable.p1e,
             R.drawable.p2e,
@@ -44,57 +57,61 @@ public class EasyGameActivity extends AppCompatActivity {
         imageMonsterEasy = findViewById(R.id.imageMonsterEasy);
         textTask = findViewById(R.id.textTask);
         textTimer = findViewById(R.id.textTimer);
-        editAnswer = findViewById( R.id.editAnswer);
+        textPoints = findViewById(R.id.textPoints);
+        progressHp = findViewById(R.id.progressHp);
+        editAnswer = findViewById(R.id.editAnswer);
         btnOk = findViewById(R.id.btnOk);
 
-
-        // 1) Losujemy potworka z puli ŁATWYCH
-        showRandomEasyMonster();
-
-        // 2) Generujemy łatwe zadanie (na razie placeholder)
+        startNewMonster();
         generateEasyTask();
+        startTimer();
 
-        // 3) Ustawiamy mechanizm czasu (na razie też placeholder)
-        setupEasyTimer();
-
-        // klikniecie ok -> sprawdza odpowiedz
         btnOk.setOnClickListener(v -> checkAnswer());
     }
 
+    // ====== LOGIKA GRY ======
+
     private void showRandomEasyMonster() {
         Random random = new Random();
-        int index = random.nextInt(easyMonsters.length);
-        int monsterResId = easyMonsters[index];
-        imageMonsterEasy.setImageResource(monsterResId);
+        imageMonsterEasy.setImageResource(
+                easyMonsters[random.nextInt(easyMonsters.length)]
+        );
+    }
+
+    private void startNewMonster() {
+        monsterHp = 100;
+        showRandomEasyMonster();
+
+        progressHp.setMax(100);
+        updateHpUI();
+
+        points = 0;
+        updatePointsUI();
+
+        btnOk.setEnabled(true);
+        editAnswer.setEnabled(true);
+        editAnswer.setText("");
     }
 
     private void generateEasyTask() {
         Random random = new Random();
-
-        //losowanie dwoch liczb z zakresu 1-20
-        int a = random.nextInt(20)+ 1;
+        int a = random.nextInt(20) + 1;
         int b = random.nextInt(20) + 1;
 
-        // obliczanie wyniku
-         correctAnswer = a + b;
-
-        String taskText = a + " + " + b + " =  ";
-
-        // wyświetlanie na ekraknie
-        textTask.setText(taskText);
-
+        correctAnswer = a + b;
+        textTask.setText(a + " + " + b + " = ?");
     }
 
-    private void checkAnswer(){
+    private void checkAnswer() {
         String txt = editAnswer.getText().toString().trim();
 
-        if(txt.isEmpty()){
-            Toast.makeText(this, "Wpisz odpowiedź", Toast.LENGTH_SHORT).show();
+        if (txt.isEmpty()) {
+            Toast.makeText(this, "Wpisz odpowiedź!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         int userAnswer;
-        try{
+        try {
             userAnswer = Integer.parseInt(txt);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Podaj liczbę.", Toast.LENGTH_SHORT).show();
@@ -102,23 +119,98 @@ public class EasyGameActivity extends AppCompatActivity {
         }
 
         if (userAnswer == correctAnswer) {
-            points += 1;
-            Toast.makeText(this, "Dobrze! Punkty: " + points, Toast.LENGTH_SHORT).show();
+            // ✅ DOBRA ODPOWIEDŹ
+            points += POINTS_CORRECT;
+            updatePointsUI();
 
-            // opcjonalnie: po poprawnej odpowiedzi losuj nowego potworka
-            showRandomEasyMonster();
+            dealDamageToMonster();
+
+            Toast.makeText(this, "✅ Dobrze! +" + POINTS_CORRECT + " pkt", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Źle! Poprawnie: " + correctAnswer, Toast.LENGTH_SHORT).show();
+            // ❌ ZŁA ODPOWIEDŹ
+            points -= POINTS_WRONG;
+            if (points < 0) points = 0;
+            updatePointsUI();
+
+            Toast.makeText(this, "❌ Źle! −" + POINTS_WRONG + " pkt", Toast.LENGTH_SHORT).show();
         }
 
-        //czyszczenie pola i losowe nowe zadanie
-        editAnswer.setText(" ");
-        generateEasyTask();
+        editAnswer.setText("");
+
+        if (monsterHp > 0) {
+            generateEasyTask();
+            startTimer();
+        }
     }
 
-    private void setupEasyTimer() {
-        // TU KIEDYŚ: logika timera (np. 10 sekund na odpowiedź)
-        // Na razie zostawiamy na sztywno:
-        textTimer.setText("Time: 00:10");
+    private void dealDamageToMonster() {
+        monsterHp -= damagePerCorrect;
+        if (monsterHp < 0) monsterHp = 0;
+
+        updateHpUI();
+
+        if (monsterHp == 0) {
+            monsterDefeated();
+        }
+    }
+
+    private void monsterDefeated() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        btnOk.setEnabled(false);
+        editAnswer.setEnabled(false);
+
+        textTask.setText("WYGRANA! 🎉");
+        textTimer.setText("0s");
+
+        Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_LONG).show();
+    }
+
+    // ====== UI ======
+
+    private void updateHpUI() {
+        progressHp.setProgress(monsterHp);
+    }
+
+    private void updatePointsUI() {
+        textPoints.setText(points + " pkt");
+    }
+
+    // ====== TIMER ======
+
+    private void startTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        btnOk.setEnabled(true);
+        editAnswer.setEnabled(true);
+
+        countDownTimer = new CountDownTimer(TIME_LIMIT_MS, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int seconds = (int) (millisUntilFinished / 1000);
+                textTimer.setText(seconds + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                textTimer.setText("0s");
+                Toast.makeText(EasyGameActivity.this, "⏱️ Koniec czasu!", Toast.LENGTH_SHORT).show();
+
+                btnOk.setEnabled(false);
+                editAnswer.setEnabled(false);
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 }
