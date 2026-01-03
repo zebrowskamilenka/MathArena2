@@ -3,4 +3,19 @@
     <string name="diff_easy">Łatwy</string>
     <string name="diff_medium">średni</string>
     <string name="diff_hard">Trudny</string>
+
+        <!-- Gra -->
+        <string name="timer_seconds">30s</string>
+        <string name="points_format">%1$d pkt</string>
+        <string name="math_task_example">2 + 2 = ?</string>
+
+        <!-- Odpowiedź -->
+        <string name="answer_hint">Wpisz odpowiedź</string>
+
+        <!-- Przyciski -->
+        <string name="btn_confirm_answer">Zatwierdź odpowiedź</string>
+
+        <!-- Dostępność -->
+        <string name="monster_description">Potworek</string>
+
 </resources>
