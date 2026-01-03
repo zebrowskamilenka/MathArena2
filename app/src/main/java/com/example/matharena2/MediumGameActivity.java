@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
+import android.widget.ImageButton;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -65,6 +68,13 @@ public class MediumGameActivity extends AppCompatActivity {
         startTimer();
 
         btnOk.setOnClickListener(v -> checkAnswer());
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(this, DifficultyActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
     // ====== POTWOREK ======
