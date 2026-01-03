@@ -1,7 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     android:background="@drawable/tlo">
+
+    <!-- TIMER -->
+    <TextView
+        android:id="@+id/textTimer"
+        android:layout_width="41dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="32dp"
+        android:text="30s"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- HP BAR -->
+    <ProgressBar
+        android:id="@+id/progressHp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="275dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="100"
+        android:progressDrawable="@drawable/progress_hp"
+        app:layout_constraintStart_toEndOf="@id/textTimer"
+        app:layout_constraintEnd_toStartOf="@id/textPoints"
+        app:layout_constraintTop_toTopOf="@id/textTimer"
+        app:layout_constraintBottom_toBottomOf="@id/textTimer" />
+
+    <!-- PUNKTY -->
+    <TextView
+        android:id="@+id/textPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="0 pkt"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ZADANIE -->
+    <TextView
+        android:id="@+id/textTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="204dp"
+        android:text="2 + 2 = ?"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/progressHp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ODPOWIEDZ -->
+    <EditText
+        android:id="@+id/editAnswer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:hint="Wpisz odpowiedź"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/textTask"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
+
+    <!-- PRZYCISK OK (OBRAZEK) -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnOk"
+        android:layout_width="240dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ok"
+        app:backgroundTint="@null"
+        android:padding="0dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:stateListAnimator="@null"
+        android:text=""
+        android:contentDescription="Zatwierdź odpowiedź"
+        app:layout_constraintTop_toBottomOf="@id/editAnswer"
+        app:layout_constraintStart_toStartOf="@id/editAnswer"
+        app:layout_constraintEnd_toEndOf="@id/editAnswer" />
+
+    <!-- POTWOREK -->
+    <ImageView
+        android:id="@+id/imageMonsterEasy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/p1e"
+        android:contentDescription="Potworek"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toBottomOf="@id/btnOk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.80"
+        app:layout_constraintDimensionRatio="1:1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
