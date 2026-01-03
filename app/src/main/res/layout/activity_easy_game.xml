@@ -115,4 +115,20 @@
         app:layout_constraintWidth_percent="0.80"
         app:layout_constraintDimensionRatio="1:1" />
 
+    <!--cofanie -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/back"
+        android:background="@android:color/transparent"
+        android:contentDescription="Powrót"
+        android:padding="4dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

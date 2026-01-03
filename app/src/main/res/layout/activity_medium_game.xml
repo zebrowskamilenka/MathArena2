@@ -2,68 +2,67 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="@drawable/tlo">
 
-    <!-- TIMER -->
+    <!-- GÓRA: czas -->
     <TextView
         android:id="@+id/textTimer"
-        android:layout_width="41dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="32dp"
-        android:text="30s"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15s"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- HP BAR -->
+    <!-- Pasek HP -->
     <ProgressBar
         android:id="@+id/progressHp"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="275dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_width="0dp"
+        android:layout_height="10dp"
         android:indeterminate="false"
         android:max="100"
         android:progress="100"
         android:progressDrawable="@drawable/progress_hp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         app:layout_constraintStart_toEndOf="@id/textTimer"
         app:layout_constraintEnd_toStartOf="@id/textPoints"
         app:layout_constraintTop_toTopOf="@id/textTimer"
-        app:layout_constraintBottom_toBottomOf="@id/textTimer" />
+        app:layout_constraintBottom_toBottomOf="@id/textTimer"/>
 
-    <!-- PUNKTY -->
+    <!-- Punkty -->
     <TextView
         android:id="@+id/textPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:text="0 pkt"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- ZADANIE -->
     <TextView
         android:id="@+id/textTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="204dp"
         android:text="2 + 2 = ?"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="14dp"
         app:layout_constraintTop_toBottomOf="@id/progressHp"
+        app:layout_constraintBottom_toTopOf="@id/editAnswer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"/>
 
-    <!-- ODPOWIEDZ -->
+    <!-- INPUT -->
     <EditText
         android:id="@+id/editAnswer"
         android:layout_width="0dp"
@@ -77,7 +76,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.6" />
 
-    <!-- PRZYCISK OK (OBRAZEK) -->
+    <!-- OK – PNG jako przycisk (1:1 jak w wizualizacji) -->
+
+    <!-- POTWOREK MEDIUM -->
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnOk"
         android:layout_width="240dp"
@@ -99,20 +101,33 @@
         app:layout_constraintStart_toStartOf="@id/editAnswer"
         app:layout_constraintEnd_toEndOf="@id/editAnswer" />
 
-    <!-- POTWOREK -->
     <ImageView
-        android:id="@+id/imageMonsterEasy"
+        android:id="@+id/imageMonsterMedium"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/p1e"
         android:contentDescription="Potworek"
         android:scaleType="fitCenter"
-        app:layout_constraintTop_toBottomOf="@id/btnOk"
+        android:src="@drawable/p1e"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.80"
-        app:layout_constraintDimensionRatio="1:1" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnOk"
+        app:layout_constraintWidth_percent="0.80" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/back"
+        android:background="@android:color/transparent"
+        android:contentDescription="Powrót"
+        android:padding="4dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

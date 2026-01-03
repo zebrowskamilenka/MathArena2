@@ -1,4 +1,3 @@
-
 package com.example.matharena2;
 
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import java.util.Random;
 
 public class MediumGameActivity extends AppCompatActivity {
 
-    private ImageView imageMonsterEasy;
+    private ImageView imageMonsterMedium;
     private TextView textTask;
     private TextView textTimer;     // czas
     private TextView textPoints;    // punkty
@@ -24,38 +23,36 @@ public class MediumGameActivity extends AppCompatActivity {
     private EditText editAnswer;
     private Button btnOk;
 
-    // logika zadania
     private int correctAnswer = 0;
     private int points = 0;
 
     // HP potworka
-    private int monsterHp = 160; // potwor ma tyle hp
-    private final int damagePerCorrect = 20; // obnizenie hp o 20
+    private int monsterHp = 100;
+    private final int damagePerCorrect = 20;
 
     // punkty
-    private final int POINTS_CORRECT = 20; // za kazda odpowiedz gracz otrzyma 20 pkt
+    private final int POINTS_CORRECT = 20;
     private final int POINTS_WRONG = 5;
 
     // timer
     private CountDownTimer countDownTimer;
     private static final int TIME_LIMIT_MS = 15000; // 15 sekund
 
-    // potworki
-    private final int[] easyMonsters = {
-            R.drawable.p4m,
-            R.drawable.p12m,
+    // ✅ POTWORKI dla MEDIUM — tutaj podmieniasz na swoje drawables!
+    private final int[] mediumMonsters = {
             R.drawable.p36m,
             R.drawable.p28m,
             R.drawable.p27m,
-
+            R.drawable.p12m,
+            R.drawable.p4m
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_easy_game);
+        setContentView(R.layout.activity_medium_game);
 
-        imageMonsterEasy = findViewById(R.id.imageMonsterEasy);
+        imageMonsterMedium = findViewById(R.id.imageMonsterMedium);
         textTask = findViewById(R.id.textTask);
         textTimer = findViewById(R.id.textTimer);
         textPoints = findViewById(R.id.textPoints);
@@ -64,24 +61,24 @@ public class MediumGameActivity extends AppCompatActivity {
         btnOk = findViewById(R.id.btnOk);
 
         startNewMonster();
-        generateEasyTask();
+        generateMediumTask();
         startTimer();
 
         btnOk.setOnClickListener(v -> checkAnswer());
     }
 
-    // ====== LOGIKA GRY ======
+    // ====== POTWOREK ======
 
-    private void showRandomEasyMonster() {
+    private void showRandomMediumMonster() {
         Random random = new Random();
-        imageMonsterEasy.setImageResource(
-                easyMonsters[random.nextInt(easyMonsters.length)]
+        imageMonsterMedium.setImageResource(
+                mediumMonsters[random.nextInt(mediumMonsters.length)]
         );
     }
 
     private void startNewMonster() {
         monsterHp = 100;
-        showRandomEasyMonster();
+        showRandomMediumMonster();
 
         progressHp.setMax(100);
         updateHpUI();
@@ -94,14 +91,30 @@ public class MediumGameActivity extends AppCompatActivity {
         editAnswer.setText("");
     }
 
-    private void generateEasyTask() {
-        Random random = new Random();
-        int a = random.nextInt(20) + 1;
-        int b = random.nextInt(20) + 1;
+    // ====== ZADANIE (na razie takie jak easy: dodawanie) ======
 
-        correctAnswer = a - b;
-        textTask.setText(a + " + " + b + " = ?");
+    private void generateMediumTask() {
+        Random random = new Random();
+
+        int a = random.nextInt(50) + 1;
+        int b = random.nextInt(50) + 1;
+
+        boolean subtraction = random.nextBoolean();
+
+        if (subtraction) {
+            int max = Math.max(a, b);
+            int min = Math.min(a, b);
+            correctAnswer = max - min;
+            textTask.setText(max + " - " + min + " = ?");
+        } else {
+            correctAnswer = a + b;
+            textTask.setText(a + " + " + b + " = ?");
+        }
     }
+
+
+
+    // ====== ODPOWIEDŹ ======
 
     private void checkAnswer() {
         String txt = editAnswer.getText().toString().trim();
@@ -120,7 +133,6 @@ public class MediumGameActivity extends AppCompatActivity {
         }
 
         if (userAnswer == correctAnswer) {
-            // ✅ DOBRA ODPOWIEDŹ
             points += POINTS_CORRECT;
             updatePointsUI();
 
@@ -128,7 +140,6 @@ public class MediumGameActivity extends AppCompatActivity {
 
             Toast.makeText(this, "✅ Dobrze! +" + POINTS_CORRECT + " pkt", Toast.LENGTH_SHORT).show();
         } else {
-            // ❌ ZŁA ODPOWIEDŹ
             points -= POINTS_WRONG;
             if (points < 0) points = 0;
             updatePointsUI();
@@ -139,7 +150,7 @@ public class MediumGameActivity extends AppCompatActivity {
         editAnswer.setText("");
 
         if (monsterHp > 0) {
-            generateEasyTask();
+            generateMediumTask();
             startTimer();
         }
     }
@@ -215,4 +226,3 @@ public class MediumGameActivity extends AppCompatActivity {
         }
     }
 }
-
