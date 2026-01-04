@@ -31,5 +31,13 @@ public class DifficultyActivity extends AppCompatActivity {
             );
             startActivity(intent);
         });
+
+//        hardButton.setOnClickListener(v -> {
+//            Intent intent = new Intent(
+//                    DifficultyActivity.this,
+//                    HardGameActivity.class
+//            );
+//            startActivity(intent);
+//        });
     }
 }

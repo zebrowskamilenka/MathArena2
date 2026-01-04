@@ -101,7 +101,7 @@ public class MediumGameActivity extends AppCompatActivity {
         editAnswer.setText("");
     }
 
-    // ====== ZADANIE (na razie takie jak easy: dodawanie) ======
+    // ====== ZADANIE  ======
 
     private void generateMediumTask() {
         Random random = new Random();

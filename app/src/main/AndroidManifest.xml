@@ -16,6 +16,8 @@
         <activity android:name=".DifficultyActivity" />
         <activity android:name=".EasyGameActivity" />
         <activity android:name=".MediumGameActivity" />
+<!--        <activity android:name=".HardGameActivity" />-->
+
 
         <activity
             android:name=".MainActivity"
