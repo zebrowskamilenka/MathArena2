@@ -84,24 +84,24 @@
     <!-- OK (PNG 1:1) -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnOk"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_width="231dp"
+        android:layout_height="66dp"
+        android:layout_marginBottom="18dp"
         android:background="@drawable/ok"
-        android:text=""
         android:contentDescription="OK"
-        android:padding="0dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         android:minWidth="0dp"
         android:minHeight="0dp"
+        android:padding="0dp"
         android:stateListAnimator="@null"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:layout_marginBottom="18dp"
-        app:layout_constraintTop_toBottomOf="@id/editAnswer"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@id/imageMonsterHard"
+        app:layout_constraintEnd_toEndOf="@id/editAnswer"
         app:layout_constraintStart_toStartOf="@id/editAnswer"
-        app:layout_constraintEnd_toEndOf="@id/editAnswer"/>
+        app:layout_constraintTop_toBottomOf="@id/editAnswer" />
 
     <!-- potworek -->
     <ImageView
