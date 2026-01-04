@@ -15,6 +15,7 @@ public class DifficultyActivity extends AppCompatActivity {
 
         ImageButton easyButton = findViewById(R.id.btnEasy);
         ImageButton mediumButton = findViewById(R.id.btnMedium);
+        ImageButton btnHard = findViewById(R.id.btnHard);
 
         easyButton.setOnClickListener(v -> {
             Intent intent = new Intent(
@@ -32,12 +33,12 @@ public class DifficultyActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        hardButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(
-//                    DifficultyActivity.this,
-//                    HardGameActivity.class
-//            );
-//            startActivity(intent);
-//        });
+        btnHard.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    DifficultyActivity.this,
+                    HardGameActivity.class
+            );
+            startActivity(intent);
+        });
     }
 }
