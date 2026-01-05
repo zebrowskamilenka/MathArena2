@@ -20,15 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <!-- HP -->
-
-    <!-- punkty -->
-
     <ProgressBar
         android:id="@+id/progressHp"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="275dp"
+        android:layout_width="0dp"
         android:layout_height="19dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
@@ -41,6 +37,7 @@
         app:layout_constraintTop_toTopOf="@id/textTimer"
         app:layout_constraintBottom_toBottomOf="@id/textTimer" />
 
+    <!-- punkty -->
     <TextView
         android:id="@+id/textPoints"
         android:layout_width="wrap_content"
@@ -56,11 +53,11 @@
         android:id="@+id/textTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="14dp"
         android:text="2 x 2 = ?"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="14dp"
         app:layout_constraintTop_toBottomOf="@id/progressHp"
         app:layout_constraintBottom_toTopOf="@id/editAnswer"
         app:layout_constraintStart_toStartOf="parent"
@@ -98,39 +95,71 @@
         android:padding="0dp"
         android:stateListAnimator="@null"
         android:text=""
-        app:layout_constraintBottom_toTopOf="@id/imageMonsterHard"
+        app:layout_constraintBottom_toTopOf="@id/monsterContainer"
         app:layout_constraintEnd_toEndOf="@id/editAnswer"
         app:layout_constraintStart_toStartOf="@id/editAnswer"
         app:layout_constraintTop_toBottomOf="@id/editAnswer" />
 
-    <!-- potworek -->
-    <ImageView
-        android:id="@+id/imageMonsterHard"
+    <!-- POTWÓR + WYBUCH (overlay) -->
+    <FrameLayout
+        android:id="@+id/monsterContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/p33h"
-        android:contentDescription="Potworek hard"
-        android:scaleType="fitCenter"
         android:layout_marginBottom="12dp"
         app:layout_constraintTop_toBottomOf="@id/btnOk"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.80"
-        app:layout_constraintDimensionRatio="1:1"/>
+        app:layout_constraintDimensionRatio="1:1">
 
-    <!-- strzałka powrotu - lewy dolny róg -->
+        <!-- potwór -->
+        <ImageView
+            android:id="@+id/imageMonsterHard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Potworek hard"
+            android:scaleType="fitCenter"
+            android:src="@drawable/p33h" />
+
+        <!-- wybuch/strzał na wierzchu -->
+        <ImageView
+            android:id="@+id/imageExplosion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:src="@drawable/explosion_anim" />
+
+    </FrameLayout>
+
+    <!-- atak -->
+
+    <!-- powrót -->
+    <ImageButton
+        android:id="@+id/btnAttack"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="636dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/attack"
+        android:src="@drawable/attack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/back"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
         android:contentDescription="Powrót"
         android:padding="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:src="@drawable/back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

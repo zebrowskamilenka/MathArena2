@@ -1,8 +1,10 @@
 package com.example.matharena2;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -17,7 +19,10 @@ import java.util.Random;
 
 public class HardGameActivity extends AppCompatActivity {
 
+
+    // kontenery rzeczy z layoutu
     private ImageView imageMonsterHard;
+    private ImageView imageExplosion;          // ✅ overlay animacji
     private TextView textTask;
     private TextView textTimer;
     private TextView textPoints;
@@ -25,12 +30,13 @@ public class HardGameActivity extends AppCompatActivity {
     private EditText editAnswer;
     private Button btnOk;
     private ImageButton btnBack;
+    private ImageButton btnAttack;             // ✅ przycisk ataku
 
     private int correctAnswer = 0;
     private int points = 0;
 
-    private int monsterHp = 100;
-    private static final int MONSTER_MAX_HP = 100;
+    private int monsterHp = 200;
+    private static final int MONSTER_MAX_HP = 200;
     private static final int DAMAGE_PER_CORRECT = 20;
 
     private static final int POINTS_CORRECT = 20;
@@ -39,7 +45,12 @@ public class HardGameActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private static final int TIME_LIMIT_MS = 15000; // 15 sekund
 
-    // ✅ HARD potworki (Twoje nazwy z drawable)
+    // ✅ ATK
+    private static final int ATTACK_COST = 50;
+    private static final int ATTACK_DAMAGE = 20;
+    private boolean attackOnCooldown = false;
+
+    // ✅ HARD potworki
     private final int[] hardMonsters = {
             R.drawable.p7h,
             R.drawable.p18h,
@@ -55,6 +66,7 @@ public class HardGameActivity extends AppCompatActivity {
 
         // 1) bind widoków
         imageMonsterHard = findViewById(R.id.imageMonsterHard);
+        imageExplosion = findViewById(R.id.imageExplosion);   // ✅
         textTask = findViewById(R.id.textTask);
         textTimer = findViewById(R.id.textTimer);
         textPoints = findViewById(R.id.textPoints);
@@ -62,6 +74,7 @@ public class HardGameActivity extends AppCompatActivity {
         editAnswer = findViewById(R.id.editAnswer);
         btnOk = findViewById(R.id.btnOk);
         btnBack = findViewById(R.id.btnBack);
+        btnAttack = findViewById(R.id.btnAttack);             // ✅
 
         // 2) back -> Difficulty
         btnBack.setOnClickListener(v -> {
@@ -76,6 +89,9 @@ public class HardGameActivity extends AppCompatActivity {
 
         // 4) ok
         btnOk.setOnClickListener(v -> checkAnswer());
+
+        // 5) atak
+        btnAttack.setOnClickListener(v -> tryAttack());
     }
 
     private void startNewMonster() {
@@ -91,6 +107,12 @@ public class HardGameActivity extends AppCompatActivity {
         editAnswer.setText("");
         editAnswer.setEnabled(true);
         btnOk.setEnabled(true);
+
+        // reset ataku
+        attackOnCooldown = false;
+        btnAttack.setEnabled(true);
+        btnAttack.setAlpha(1f);
+        if (imageExplosion != null) imageExplosion.setVisibility(View.GONE);
     }
 
     private void showRandomHardMonster() {
@@ -130,7 +152,7 @@ public class HardGameActivity extends AppCompatActivity {
             points += POINTS_CORRECT;
             updatePointsUI();
 
-            dealDamageToMonster();
+            dealDamageToMonster(DAMAGE_PER_CORRECT);
 
             Toast.makeText(this, "✅ Dobrze! +" + POINTS_CORRECT + " pkt", Toast.LENGTH_SHORT).show();
         } else {
@@ -149,8 +171,9 @@ public class HardGameActivity extends AppCompatActivity {
         }
     }
 
-    private void dealDamageToMonster() {
-        monsterHp -= DAMAGE_PER_CORRECT;
+    // ✅ jedna metoda na dmg (żeby i OK i Attack używały tego samego)
+    private void dealDamageToMonster(int damage) {
+        monsterHp -= damage;
         if (monsterHp < 0) monsterHp = 0;
         updateHpUI();
 
@@ -159,11 +182,85 @@ public class HardGameActivity extends AppCompatActivity {
         }
     }
 
+    // ✅ ATAK: -50 pkt, -20 HP, animacja, pomija zadanie, cooldown 15s
+    private void tryAttack() {
+        if (monsterHp <= 0) return; // już wygrane
+
+        if (attackOnCooldown) {
+            Toast.makeText(this, "Atak dostępny za chwilę!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (points < ATTACK_COST) {
+            Toast.makeText(this, "Za mało punktów (potrzeba 50).", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // koszt
+        points -= ATTACK_COST;
+        updatePointsUI();
+
+        // animacja
+        playExplosionAnimation();
+
+        // obrażenia
+        dealDamageToMonster(ATTACK_DAMAGE);
+
+        // pomiń bieżące zadanie i daj nowe + reset timera 15s (jeśli jeszcze żyje)
+        if (monsterHp > 0) {
+            editAnswer.setText("");
+            generateHardTask();
+            startTimer();
+        }
+
+        // cooldown 15s
+        startAttackCooldown(15);
+    }
+
+    private void playExplosionAnimation() {
+        if (imageExplosion == null) return;
+
+        imageExplosion.setVisibility(View.VISIBLE);
+
+        // explosion_anim musi być animation-list
+        if (imageExplosion.getDrawable() instanceof AnimationDrawable) {
+            AnimationDrawable anim = (AnimationDrawable) imageExplosion.getDrawable();
+            anim.stop();
+            anim.start();
+
+            int durationMs = 0;
+            for (int i = 0; i < anim.getNumberOfFrames(); i++) {
+                durationMs += anim.getDuration(i);
+            }
+            imageExplosion.postDelayed(() -> imageExplosion.setVisibility(View.GONE), durationMs);
+        } else {
+            // fallback: schowaj po chwili
+            imageExplosion.postDelayed(() -> imageExplosion.setVisibility(View.GONE), 500);
+        }
+    }
+
+    private void startAttackCooldown(int seconds) {
+        attackOnCooldown = true;
+        btnAttack.setEnabled(false);
+        btnAttack.setAlpha(0.5f);
+
+        btnAttack.postDelayed(() -> {
+            attackOnCooldown = false;
+            btnAttack.setEnabled(true);
+            btnAttack.setAlpha(1f);
+            Toast.makeText(this, "Atak znowu dostępny!", Toast.LENGTH_SHORT).show();
+        }, seconds * 1000L);
+    }
+
     private void onWin() {
         stopTimer();
 
         btnOk.setEnabled(false);
         editAnswer.setEnabled(false);
+
+        // opcjonalnie: też blokuj atak po wygranej
+        btnAttack.setEnabled(false);
+        btnAttack.setAlpha(0.5f);
 
         textTask.setText("WYGRANA! 🎉");
         textTimer.setText("0s");
@@ -199,6 +296,10 @@ public class HardGameActivity extends AppCompatActivity {
 
                 btnOk.setEnabled(false);
                 editAnswer.setEnabled(false);
+
+                // opcjonalnie: pozwól nadal użyć ataku mimo końca czasu
+                // (jeśli chcesz zablokować atak po czasie, to odkomentuj):
+                // btnAttack.setEnabled(false);
             }
         }.start();
     }
