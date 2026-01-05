@@ -61,6 +61,7 @@ public class HardGameActivity extends AppCompatActivity {
         progressHp = findViewById(R.id.progressHp);
         editAnswer = findViewById(R.id.editAnswer);
         btnOk = findViewById(R.id.btnOk);
+        btnBack = findViewById(R.id.btnBack);
 
         // 2) back -> Difficulty
         btnBack.setOnClickListener(v -> {
