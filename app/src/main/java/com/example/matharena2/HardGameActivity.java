@@ -32,25 +32,29 @@ public class HardGameActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private ImageButton btnAttack;             // ✅ przycisk ataku
 
+    // dane gry czyli punkty HP i odpowiedz
     private int correctAnswer = 0;
-    private int points = 0;
+    private int points = 0; // ile masz punktów
 
-    private int monsterHp = 200;
-    private static final int MONSTER_MAX_HP = 200;
-    private static final int DAMAGE_PER_CORRECT = 20;
+    private int monsterHp = 200; //aktualne hp potwora
+    private static final int MONSTER_MAX_HP = 200; // maksymalne hp
+    private static final int DAMAGE_PER_CORRECT = 20; //ile sie zabiera za poprawna odpowiedz
 
-    private static final int POINTS_CORRECT = 20;
-    private static final int POINTS_WRONG = 5;
+    private static final int POINTS_CORRECT = 20; // ile sie dostaje za poprawna odpowiedz
+    private static final int POINTS_WRONG = 5; //ile sie traci za bledna odpowiedz
+    private static final long NEXT_MONSTER_DELAY_MS = 1200;
 
-    private CountDownTimer countDownTimer;
+
+    // wprowadzenie timera
+    private CountDownTimer countDownTimer; //licznik ktory odlicza od 15 do 0
     private static final int TIME_LIMIT_MS = 15000; // 15 sekund
 
-    // ✅ ATK
-    private static final int ATTACK_COST = 50;
-    private static final int ATTACK_DAMAGE = 20;
+    // ATak
+    private static final int ATTACK_COST = 50; // koszt ataku
+    private static final int ATTACK_DAMAGE = 20; //
     private boolean attackOnCooldown = false;
 
-    // ✅ HARD potworki
+    // ✅ HARD potworki - losowanie potwora
     private final int[] hardMonsters = {
             R.drawable.p7h,
             R.drawable.p18h,
@@ -62,7 +66,7 @@ public class HardGameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hard_game);
+        setContentView(R.layout.activity_hard_game); // start ktory laduje layout
 
         // 1) bind widoków
         imageMonsterHard = findViewById(R.id.imageMonsterHard);
@@ -101,19 +105,16 @@ public class HardGameActivity extends AppCompatActivity {
         progressHp.setMax(MONSTER_MAX_HP);
         updateHpUI();
 
-        points = 0;
-        updatePointsUI();
-
         editAnswer.setText("");
         editAnswer.setEnabled(true);
         btnOk.setEnabled(true);
 
-        // reset ataku
         attackOnCooldown = false;
         btnAttack.setEnabled(true);
         btnAttack.setAlpha(1f);
         if (imageExplosion != null) imageExplosion.setVisibility(View.GONE);
     }
+
 
     private void showRandomHardMonster() {
         Random random = new Random();
@@ -257,16 +258,22 @@ public class HardGameActivity extends AppCompatActivity {
 
         btnOk.setEnabled(false);
         editAnswer.setEnabled(false);
-
-        // opcjonalnie: też blokuj atak po wygranej
         btnAttack.setEnabled(false);
         btnAttack.setAlpha(0.5f);
 
         textTask.setText("WYGRANA! 🎉");
         textTimer.setText("0s");
 
-        Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_SHORT).show();
+
+        // ✅ po chwili start nowego potwora + nowe zadanie + timer
+        textTask.postDelayed(() -> {
+            startNewMonster();      // reset HP + losuje potwora + resetuje UI (u Ciebie też punkty)
+            generateHardTask();     // nowe działanie
+            startTimer();           // nowe 15s
+        }, NEXT_MONSTER_DELAY_MS);
     }
+
 
     private void updateHpUI() {
         progressHp.setProgress(monsterHp);
