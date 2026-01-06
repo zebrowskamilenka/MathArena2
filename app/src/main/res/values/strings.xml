@@ -20,5 +20,7 @@
     <!-- Dostępność / opisy -->
     <string name="monster_description">Potworek</string>
     <string name="btn_back">Powrót</string>
+    <string name="attack">Atak</string>
+
 
 </resources>
