@@ -1,48 +1,50 @@
 package com.example.matharena2;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.CountDownTimer; //odliczaniie czasu w dol
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Toast; // krotkie komunikaty na ekranie
 import android.content.Intent;
 import android.widget.ImageButton;
 
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Random;
+import java.util.Random; // lsowanie
 
 public class EasyGameActivity extends AppCompatActivity {
-
-    private ImageView imageMonsterEasy;
-    private TextView textTask;
+// elementu ui z layoutu zdafiniowane w xml stringami
+    private ImageView imageMonsterEasy; //stworek
+    private TextView textTask; //miejsce na zadanie
     private TextView textTimer;     // czas
     private TextView textPoints;    // punkty
     private ProgressBar progressHp; // pasek HP
-    private EditText editAnswer;
-    private Button btnOk;
+    private EditText editAnswer; // miejsce do wpisania odpowiedz
+    private Button btnOk; // przycisk okej
 
     // logika zadania
-    private int correctAnswer = 0;
-    private int points = 0;
+    private int correctAnswer = 0; // poczatkowa wartosc zmiennej przed wygenewoaniem pierwszego zadania
+    private int points = 0; // liczba punktow na poczatku
 
     // HP potworka
-    private int monsterHp = 100;
-    private final int damagePerCorrect = 20;
+    private int monsterHp = 100; // poczatkowe zycie potworka to 100hp
+    private final int damagePerCorrect = 20; // za poprawna odpowiedz zadaje sie 20 pkt zycia
 
     // punkty
-    private final int POINTS_CORRECT = 20;
-    private final int POINTS_WRONG = 5;
+    private final int POINTS_CORRECT = 20; // otrzymujesz 20 pkt za poprawna odpowiedz
+    private final int POINTS_WRONG = 5; // za zla odpowiedz otrzymujesz minusowe punkty czyli -5
 
     // timer
-    private CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer; // odliczanie 15 sekund
     private static final int TIME_LIMIT_MS = 15000; // 15 sekund
 
-    // potworki
+    // potworki - lista potworkow pobieranych z drawable
+    // R - oznacza zeby pobrał z folderu res (skrot od resorources - zasoby)
+    // drawable - ozancza gdzie dokkladnie w ktorym folderze sie znajduje potworek
     private final int[] easyMonsters = {
             R.drawable.p1e,
             R.drawable.p2e,
@@ -53,29 +55,29 @@ public class EasyGameActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { // co siedzieje po wejsciu na ekran
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_easy_game);
+        setContentView(R.layout.activity_easy_game); // wczytanie layoutu
 
-        imageMonsterEasy = findViewById(R.id.imageMonsterEasy);
-        textTask = findViewById(R.id.textTask);
-        textTimer = findViewById(R.id.textTimer);
-        textPoints = findViewById(R.id.textPoints);
-        progressHp = findViewById(R.id.progressHp);
-        editAnswer = findViewById(R.id.editAnswer);
-        btnOk = findViewById(R.id.btnOk);
+        imageMonsterEasy = findViewById(R.id.imageMonsterEasy);  // podpiecei z ui zdjec potworkow
+        textTask = findViewById(R.id.textTask); // podpiecie z ui zadania
+        textTimer = findViewById(R.id.textTimer); // podpiecie timera
+        textPoints = findViewById(R.id.textPoints); // podpiecie miejsca na punkty
+        progressHp = findViewById(R.id.progressHp); // podpiecie paska hp potwora
+        editAnswer = findViewById(R.id.editAnswer); // podpiecie miejsca gdzie wpisuje sie odpowiedz
+        btnOk = findViewById(R.id.btnOk); // podpiecie przycisku okej do zatwierdzania odpowiedzi
 
-        startNewMonster();
-        generateEasyTask();
-        startTimer();
+        startNewMonster();  // przygotowanie potworka
+        generateEasyTask(); // wylosowanie pierwszego zadania
+        startTimer(); // start odliczania czasu
 
-        btnOk.setOnClickListener(v -> checkAnswer());
+        btnOk.setOnClickListener(v -> checkAnswer()); //po kliknieciu sprawdzenie odpowiedzi
 
-        ImageButton btnBack = findViewById(R.id.btnBack);
+        ImageButton btnBack = findViewById(R.id.btnBack); //przycisk cofnij wraca do ekranu wyboru trudnusci
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, DifficultyActivity.class);
             startActivity(intent);
-            finish();
+            finish(); // zamkniecie strony latwej gry
         });
     }
 
@@ -83,33 +85,33 @@ public class EasyGameActivity extends AppCompatActivity {
 
     private void showRandomEasyMonster() {
         Random random = new Random();
-        imageMonsterEasy.setImageResource(
-                easyMonsters[random.nextInt(easyMonsters.length)]
+        imageMonsterEasy.setImageResource( //losowanie potworka
+                easyMonsters[random.nextInt(easyMonsters.length)] // losowanie indeksu potworka
         );
     }
-
+// reset gry na nowego potworka
     private void startNewMonster() {
-        monsterHp = 100;
-        showRandomEasyMonster();
+        monsterHp = 100; // ustawienie zycia na 100
+        showRandomEasyMonster(); // losowanie potworka
 
-        progressHp.setMax(100);
-        updateHpUI();
+        progressHp.setMax(100); // maksymalna wartosc paska na 100
+        updateHpUI(); // odswiezenie paska
 
-        points = 0;
+        points = 0; // reset punktow, jakby punkty jesli zdobyles 100 punktow to w nastepnej grze juz nie bedzie mial tych 100 punktow tylko zaczynasz znowu od 0
         updatePointsUI();
 
         btnOk.setEnabled(true);
         editAnswer.setEnabled(true);
-        editAnswer.setText("");
+        editAnswer.setText(""); // czyszczenie pola odpowiedzi
     }
-
+// generowanie zadania
     private void generateEasyTask() {
         Random random = new Random();
-        int a = random.nextInt(20) + 1;
-        int b = random.nextInt(20) + 1;
+        int a = random.nextInt(20) + 1; // losowanie a 1-20
+        int b = random.nextInt(20) + 1; // losowanie b 1-20
 
-        correctAnswer = a + b;
-        textTask.setText(a + " + " + b + " = ?");
+        correctAnswer = a + b; // zapisanie poprawnej odpowiedzi do correct answer
+        textTask.setText(a + " + " + b + " = ?"); // pokazanie tresci zadania na ekraniep
     }
 
     private void checkAnswer() {

@@ -1,9 +1,9 @@
 package com.example.matharena2;
 
-import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
+import android.content.Intent; // przevhodzenie miedzy ekranami
+import android.graphics.drawable.AnimationDrawable; // animacja wybuchu z animation-list
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.CountDownTimer; // timer w dol odliczanie
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,37 +11,37 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Toast; //wiadomosci/komunikaty w trakcie gry
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Random;
+import java.util.Random; // losowanie
 
 public class HardGameActivity extends AppCompatActivity {
 
-    // kontenery rzeczy z layoutu
-    private ImageView imageMonsterHard;
-    private ImageView imageExplosion;          // ✅ overlay animacji
-    private TextView textTask;
-    private TextView textTimer;
-    private TextView textPoints;
-    private ProgressBar progressHp;
-    private EditText editAnswer;
-    private Button btnOk;
-    private ImageButton btnBack;
-    private ImageButton btnAttack;             // ✅ przycisk ataku
+    //  rzeczy z layoutu - elementy ui
+    private ImageView imageMonsterHard; //obrazek potwora dla trybu trudny
+    private ImageView imageExplosion; // animacja wybuchu
+    private TextView textTask; // tekst zadania
+    private TextView textTimer; // odlicznie (timer)
+    private TextView textPoints; //punkty zdobyte przez gracza
+    private ProgressBar progressHp; // pasek zycia potworka
+    private EditText editAnswer; // pole do wpisania odpowiedz
+    private Button btnOk; // przycisk okej ktory zatwierdza odpowiedz ktoa sie wpisuje do editAnswer
+    private ImageButton btnBack; //powrot do wyboru poziomu czyli do difficultyAvtivity
+    private ImageButton btnAttack;             // przycisk ataku
 
     // dane gry czyli punkty HP i odpowiedz
     private int correctAnswer = 0;
-    private int points = 0; // ile masz punktów
+    private int points = 0; // ile masz punktów, ale zaycznasz od zera
 
-    private int monsterHp = 200; //aktualne hp potwora
+    private int monsterHp = 200; //poczatkowe hp potwora
     private static final int MONSTER_MAX_HP = 200; // maksymalne hp
     private static final int DAMAGE_PER_CORRECT = 20; //ile sie zabiera za poprawna odpowiedz
 
     private static final int POINTS_CORRECT = 20; // ile sie dostaje za poprawna odpowiedz
     private static final int POINTS_WRONG = 5; //ile sie traci za bledna odpowiedz
-    private static final long NEXT_MONSTER_DELAY_MS = 1200;
+    private static final long NEXT_MONSTER_DELAY_MS = 1200; // jak wygrassz to czeka sie 12s zeby pojawil sie kolejny potwor
 
     // wprowadzenie timera
     private CountDownTimer countDownTimer; //licznik ktory odlicza od 15 do 0
@@ -49,14 +49,14 @@ public class HardGameActivity extends AppCompatActivity {
 
     // ATak
     private static final int ATTACK_COST = 50; // koszt ataku
-    private static final int ATTACK_DAMAGE = 20; //
-    private boolean attackOnCooldown = false;
+    private static final int ATTACK_DAMAGE = 20; // obrazenia ataku
+    private boolean attackOnCooldown = false; // czy atak jest aktualnie zablokowany
 
-    // ✅ poprawka: osobny timer cooldownu (stabilniejsze niż postDelayed na btn)
+    // osobny timer cooldownu ataku
     private CountDownTimer attackCooldownTimer;
     private static final int ATTACK_COOLDOWN_MS = 15000; // 15 sekund cooldownu
 
-    // ✅ HARD potworki - losowanie potwora
+    // HARD potworki - losowanie potwora
     private final int[] hardMonsters = {
             R.drawable.p7h,
             R.drawable.p18h,
@@ -68,7 +68,7 @@ public class HardGameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hard_game); // start ktory laduje layout
+        setContentView(R.layout.activity_hard_game); // start ktory laduje layout do poziomu trudnego
 
         // Pelementy UI z xml do zmiennychw javie
         imageMonsterHard = findViewById(R.id.imageMonsterHard);
@@ -85,7 +85,7 @@ public class HardGameActivity extends AppCompatActivity {
         // obsluga przycisku powrotu - przejscie do activityduficulty
         btnBack.setOnClickListener(v -> {
             startActivity(new Intent(HardGameActivity.this, DifficultyActivity.class));
-            finish();
+            finish(); //zamkniecie HardGameActivity - jkaby gra skonczona i jak klikniesz znowu to nowa runde otwiera
         });
 
         // start gry
@@ -96,7 +96,7 @@ public class HardGameActivity extends AppCompatActivity {
         // przycisk okej ktory sprawdza czy odpwiedz jest poprawna
         btnOk.setOnClickListener(v -> checkAnswer());
 
-        // 5) atak - wykoananie tatku kosztujace 50 pkt
+        // 5) atak - wykoananie ataku kosztujace 50 pkt
         btnAttack.setOnClickListener(v -> tryAttack());
     }
 
@@ -108,7 +108,7 @@ public class HardGameActivity extends AppCompatActivity {
         showRandomHardMonster(); // losowanie grafiki potwora
 
         progressHp.setMax(MONSTER_MAX_HP); // pasek HP
-        updateHpUI();
+        updateHpUI(); // zaktualizowanie paska zeby był na maksa
 // rteset pola odpowidzi i odblokowanie przycisku okej
         editAnswer.setText("");
         editAnswer.setEnabled(true);
@@ -116,13 +116,13 @@ public class HardGameActivity extends AppCompatActivity {
 // odblokowanie przycisku atatku i reset jego stanu
         attackOnCooldown = false;
         btnAttack.setEnabled(true);
-        btnAttack.setAlpha(1f);
+        btnAttack.setAlpha(1f); // 1f oznacza wpełni widoczny przycisk
         if (imageExplosion != null) imageExplosion.setVisibility(View.GONE); // ukrycie animacji wybuchu
     }
-
+// losowanie i usatwianie obrazku z tablicy hardMosters
     private void showRandomHardMonster() {
         Random random = new Random();
-        int idx = random.nextInt(hardMonsters.length);
+        int idx = random.nextInt(hardMonsters.length); // losowanie potworka
         imageMonsterHard.setImageResource(hardMonsters[idx]);
     }
 
@@ -135,7 +135,7 @@ public class HardGameActivity extends AppCompatActivity {
         correctAnswer = a * b; //zapis poprawnej odpowiedzi w correctAnswer
         textTask.setText(a + " × " + b + " = ?"); // wyswietlanie zadanie na ekranie
     }
-
+// sprawdzenie odpowiedzi po ok
     private void checkAnswer() {
         String txt = editAnswer.getText().toString().trim(); // pobranie wpisu gracza - trim zostal dopisany aby usunac spacje
 
@@ -155,7 +155,7 @@ public class HardGameActivity extends AppCompatActivity {
         if (userAnswer == correctAnswer) {
             //poprawna odpowiedz dodaje punktgy i zadaje obrazenia
             points += POINTS_CORRECT; // dodaje pkt
-            updatePointsUI();
+            updatePointsUI(); //aktualizacja punktow
 
             dealDamageToMonster(DAMAGE_PER_CORRECT); //obrazenia
 
@@ -176,13 +176,13 @@ public class HardGameActivity extends AppCompatActivity {
         }
     }
 
-    // jedna metoda na dmg (żeby i OK i Attack używały tego samego)
+    // jedna metoda na dmg
     private void dealDamageToMonster(int damage) {
         // Odejmowanie HP (z zabezpieczeniem żeby nie spadło poniżej 0)
         monsterHp -= damage;
         if (monsterHp < 0) monsterHp = 0;
         updateHpUI(); // aktualizacja paska hp
-// wygrana jesli 0
+// wygrana jesli potwor ma 0hp
         if (monsterHp == 0) {
             onWin();
         }
@@ -222,38 +222,24 @@ public class HardGameActivity extends AppCompatActivity {
         // cooldown 15s
         startAttackCooldown();
     }
+//animacja wybuchu po uzyciu przycisku ataku
+private void playExplosionAnimation() {
+    imageExplosion.setVisibility(View.VISIBLE);
 
-    private void playExplosionAnimation() {
-        if (imageExplosion == null) return;
+    AnimationDrawable anim = (AnimationDrawable) imageExplosion.getDrawable();
+    anim.start();
 
-        imageExplosion.setVisibility(View.VISIBLE);
-
-        // explosion_anim musi być animation-list
-        if (imageExplosion.getDrawable() instanceof AnimationDrawable) {
-            AnimationDrawable anim = (AnimationDrawable) imageExplosion.getDrawable();
-            anim.stop();
-            anim.start();
-
-            int durationMs = 0;
-            for (int i = 0; i < anim.getNumberOfFrames(); i++) {
-                durationMs += anim.getDuration(i);
-            }
-            imageExplosion.postDelayed(() -> imageExplosion.setVisibility(View.GONE), durationMs);
-        } else {
-            // fallback: schowaj po chwili
-            imageExplosion.postDelayed(() -> imageExplosion.setVisibility(View.GONE), 500);
-        }
-    }
-
-    // ✅ poprawka: cooldown oparty o CountDownTimer (nie gubi się tak łatwo jak postDelayed na przycisku)
+    // chowamy wybuch po krótkiej chwili
+    imageExplosion.postDelayed(() ->
+            imageExplosion.setVisibility(View.GONE), 800);
+}
+// blokada ataku na 15s
     private void startAttackCooldown() {
-        // anuluje poprzedni timer cooldownu (jeśli istniał),
-        // żeby nie nakładało się kilka timerów naraz
-        stopAttackCooldown();
-        // Ustaw stan "cooldown aktywny" i zablokuj przycisk ataku
-        attackOnCooldown = true;
+        stopAttackCooldown(); // jesli był cooldown to go zatrzymaj
+
+        attackOnCooldown = true; //zablokowanie ataku - ikona jest widoczna ale wygasnieta
         btnAttack.setEnabled(false);
-        btnAttack.setAlpha(0.5f);
+        btnAttack.setAlpha(0.5f); // wyblakniety przycisk
         // Timer, który po 15 sekundach odblokuje atak
         attackCooldownTimer = new CountDownTimer(ATTACK_COOLDOWN_MS, 1000) {
             @Override
@@ -269,47 +255,47 @@ public class HardGameActivity extends AppCompatActivity {
             }
         }.start();
     }
-
+// jesli timer istnieje to go zatrzymaj
     private void stopAttackCooldown() {
         if (attackCooldownTimer != null) {
             attackCooldownTimer.cancel();
             attackCooldownTimer = null;
         }
-        attackOnCooldown = false;  // Ustaw stan jako "atak dostępny
+        attackOnCooldown = false;  // ustawienie stanu jako atak dostępny
     }
-
+// wygrana - czyli pokanienie potwora i ma 0hp
     private void onWin() {
-        stopTimer();
-        stopAttackCooldown(); // przy wygranej czyścimy cooldown
-
+        stopTimer(); //zatrzymanie timera zadania
+        stopAttackCooldown(); // przy wygranej czyszczenie cooldown
+// blokowanie przyciskow bo sa juz niepotrzebne
         btnOk.setEnabled(false);
         editAnswer.setEnabled(false);
         btnAttack.setEnabled(false);
         btnAttack.setAlpha(0.5f);
-
+//komuniekat w miejscu gdzie wyswietka sie zadanie matematyczne
         textTask.setText("WYGRANA! 🎉");
         textTimer.setText("0s");
-
+// komnikat na dole ekranu
         Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_SHORT).show();
 
         //  po chwili start nowego potwora + nowe zadanie + timer
         textTask.postDelayed(() -> {
-            startNewMonster();      // reset HP + losuje potwora + resetuje UI (u Ciebie też punkty)
+            startNewMonster();      // reset stworka
             generateHardTask();     // nowe działanie
             startTimer();           // nowe 15s
         }, NEXT_MONSTER_DELAY_MS);
     }
-
+// aktualizacja paska zycia
     private void updateHpUI() {
         progressHp.setProgress(monsterHp);
     }
-
+// aktualizacja punktow na ekranie
     private void updatePointsUI() {
         textPoints.setText(points + " pkt");
     }
-
+// Czas na odpowiedz
     private void startTimer() {
-        stopTimer();    // Zatrzymanie poprzedniego timera, aby nie było dwóch timerów jednocześnie
+        stopTimer();    // timer z poprzedniej rundy jest zatrzymywany aby nie bylo dwoch timerow jednoczesnie
 
         // Odblokowanie OK i pola odpowiedzi na czas nowego zadania
         btnOk.setEnabled(true);
@@ -319,14 +305,14 @@ public class HardGameActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 int seconds = (int) (millisUntilFinished / 1000);
-                textTimer.setText(seconds + "s");
+                textTimer.setText(seconds + "s"); // pokazywanie ile czasu zostało
             }
 
             @Override
             public void onFinish() {
                 // Koniec czasu — blokuje możliwość wpisania i zatwierdzenia odpowiedzi
                 textTimer.setText("0s");
-                Toast.makeText(HardGameActivity.this, "⏱️ Koniec czasu!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HardGameActivity.this, "Koniec czasu!", Toast.LENGTH_SHORT).show();
 
                 btnOk.setEnabled(false);
                 editAnswer.setEnabled(false);
@@ -334,14 +320,14 @@ public class HardGameActivity extends AppCompatActivity {
             }
         }.start();
     }
-
+// zatrzymanie timera zadnia
     private void stopTimer() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
         }
     }
-
+// po wyjsciu z rozgrywki badz gry wszytsko jest zatrzymane
     @Override
     protected void onDestroy() {
         super.onDestroy();
