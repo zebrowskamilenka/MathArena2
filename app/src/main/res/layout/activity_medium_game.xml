@@ -20,12 +20,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Punkty -->
+    <TextView
+        android:id="@+id/textPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- Pasek HP -->
     <ProgressBar
         android:id="@+id/progressHp"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="275dp"
+        android:layout_width="0dp"
         android:layout_height="19dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
@@ -38,16 +50,26 @@
         app:layout_constraintTop_toTopOf="@id/textTimer"
         app:layout_constraintBottom_toBottomOf="@id/textTimer" />
 
-    <!-- Punkty -->
-    <TextView
-        android:id="@+id/textPoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+    <!-- ATAK -->
+    <ImageButton
+        android:id="@+id/btnAttack"
+        android:layout_width="136dp"
+        android:layout_height="123dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/attack"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/atak"
+
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp"
+
+        app:layout_constraintTop_toBottomOf="@id/textTimer"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- ZADANIE -->
     <TextView
@@ -57,9 +79,9 @@
         android:text=""
         android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="14dp"
-        app:layout_constraintTop_toBottomOf="@id/progressHp"
+        app:layout_constraintTop_toBottomOf="@id/btnAttack"
         app:layout_constraintBottom_toTopOf="@id/editAnswer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +92,7 @@
         android:id="@+id/editAnswer"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:hint=" Wpisz odpowiedz"
         android:inputType="number"
@@ -80,9 +102,6 @@
         app:layout_constraintWidth_percent="0.6" />
 
     <!-- OK – PNG jako przycisk (1:1 jak w wizualizacji) -->
-
-    <!-- POTWOREK MEDIUM -->
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnOk"
         android:layout_width="240dp"
@@ -104,20 +123,36 @@
         app:layout_constraintStart_toStartOf="@id/editAnswer"
         app:layout_constraintEnd_toEndOf="@id/editAnswer" />
 
-    <ImageView
-        android:id="@+id/imageMonsterMedium"
+    <!-- POTWÓR + WYBUCH  -->
+    <FrameLayout
+        android:id="@+id/monsterContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription=""
-        android:scaleType="fitCenter"
-        android:src="@drawable/p1e"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="12dp"
         app:layout_constraintTop_toBottomOf="@id/btnOk"
-        app:layout_constraintWidth_percent="0.80" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.80"
+        app:layout_constraintDimensionRatio="1:1">
+
+        <ImageView
+            android:id="@+id/imageMonsterMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Potworek medium"
+            android:scaleType="fitCenter"
+            android:src="@drawable/p36m" />
+
+        <ImageView
+            android:id="@+id/imageExplosion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:src="@drawable/explosion_anim" />
+
+    </FrameLayout>
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -127,10 +162,9 @@
         android:background="@android:color/transparent"
         android:contentDescription="Powrót"
         android:padding="4dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,21 +10,27 @@ import android.widget.TextView;
 import android.widget.Toast; // krotkie komunikaty na ekranie
 import android.content.Intent;
 import android.widget.ImageButton;
+import android.os.Handler;
+import android.os.Looper;
 
+import android.graphics.drawable.AnimationDrawable; // animacja wybuchu z animation-list
+import android.view.View; // View.VISIBLE / View.GONE
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random; // lsowanie
 
 public class EasyGameActivity extends AppCompatActivity {
-// elementu ui z layoutu zdafiniowane w xml stringami
+    // elementu ui z layoutu zdafiniowane w xml stringami
     private ImageView imageMonsterEasy; //stworek
+    private ImageView imageExplosion; // animacja wybuchu (overlay)
     private TextView textTask; //miejsce na zadanie
     private TextView textTimer;     // czas
     private TextView textPoints;    // punkty
     private ProgressBar progressHp; // pasek HP
     private EditText editAnswer; // miejsce do wpisania odpowiedz
     private Button btnOk; // przycisk okej
+    private ImageButton btnAttack; // przycisk ataku
 
     // logika zadania
     private int correctAnswer = 0; // poczatkowa wartosc zmiennej przed wygenewoaniem pierwszego zadania
@@ -38,9 +44,20 @@ public class EasyGameActivity extends AppCompatActivity {
     private final int POINTS_CORRECT = 20; // otrzymujesz 20 pkt za poprawna odpowiedz
     private final int POINTS_WRONG = 5; // za zla odpowiedz otrzymujesz minusowe punkty czyli -5
 
+    // ATAK (tak jak w Hard)
+    private static final int ATTACK_COST = 50;       // koszt ataku (ile trzeba punktow)
+    private static final int ATTACK_DAMAGE = 20;     // obrazenia ataku (ile HP zabiera)
+    private boolean attackOnCooldown = false;        // czy atak jest aktualnie zablokowany (cooldown)
+
+    // osobny timer cooldownu ataku
+    private CountDownTimer attackCooldownTimer;
+    private static final int ATTACK_COOLDOWN_MS = 15000; // 15 sekund cooldownu
+
     // timer
     private CountDownTimer countDownTimer; // odliczanie 15 sekund
     private static final int TIME_LIMIT_MS = 15000; // 15 sekund
+
+    private static final long NEXT_MONSTER_DELAY_MS = 1200; // po wygranej chwila przerwy zanim pojawi sie kolejny potwor
 
     // potworki - lista potworkow pobieranych z drawable
     // R - oznacza zeby pobrał z folderu res (skrot od resorources - zasoby)
@@ -60,18 +77,21 @@ public class EasyGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_easy_game); // wczytanie layoutu
 
         imageMonsterEasy = findViewById(R.id.imageMonsterEasy);  // podpiecei z ui zdjec potworkow
+        imageExplosion = findViewById(R.id.imageExplosion); // podpiecie animacji wybuchu
         textTask = findViewById(R.id.textTask); // podpiecie z ui zadania
         textTimer = findViewById(R.id.textTimer); // podpiecie timera
         textPoints = findViewById(R.id.textPoints); // podpiecie miejsca na punkty
         progressHp = findViewById(R.id.progressHp); // podpiecie paska hp potwora
         editAnswer = findViewById(R.id.editAnswer); // podpiecie miejsca gdzie wpisuje sie odpowiedz
         btnOk = findViewById(R.id.btnOk); // podpiecie przycisku okej do zatwierdzania odpowiedzi
+        btnAttack = findViewById(R.id.btnAttack); // podpiecie przycisku ataku
 
         startNewMonster();  // przygotowanie potworka
         generateEasyTask(); // wylosowanie pierwszego zadania
         startTimer(); // start odliczania czasu
 
         btnOk.setOnClickListener(v -> checkAnswer()); //po kliknieciu sprawdzenie odpowiedzi
+        btnAttack.setOnClickListener(v -> tryAttack()); // po kliknieciu atak (kosztuje punkty)
 
         ImageButton btnBack = findViewById(R.id.btnBack); //przycisk cofnij wraca do ekranu wyboru trudnusci
         btnBack.setOnClickListener(v -> {
@@ -89,22 +109,32 @@ public class EasyGameActivity extends AppCompatActivity {
                 easyMonsters[random.nextInt(easyMonsters.length)] // losowanie indeksu potworka
         );
     }
-// reset gry na nowego potworka
+
+    // reset gry na nowego potworka
     private void startNewMonster() {
+        stopAttackCooldown(); // reset cooldownu ataku (jak w Hard) - nowy potwor zaczyna "czysto"
+
         monsterHp = 100; // ustawienie zycia na 100
         showRandomEasyMonster(); // losowanie potworka
 
         progressHp.setMax(100); // maksymalna wartosc paska na 100
         updateHpUI(); // odswiezenie paska
-
-        points = 0; // reset punktow, jakby punkty jesli zdobyles 100 punktow to w nastepnej grze juz nie bedzie mial tych 100 punktow tylko zaczynasz znowu od 0
         updatePointsUI();
 
         btnOk.setEnabled(true);
         editAnswer.setEnabled(true);
         editAnswer.setText(""); // czyszczenie pola odpowiedzi
+
+        // odblokowanie przycisku ataku i reset jego stanu (jak w Hard)
+        attackOnCooldown = false;
+        btnAttack.setEnabled(true);
+        btnAttack.setAlpha(1f); // 1f oznacza wpelni widoczny przycisk
+
+        // ukrycie wybuchu na start rundy
+        if (imageExplosion != null) imageExplosion.setVisibility(View.GONE);
     }
-// generowanie zadania
+
+    // generowanie zadania
     private void generateEasyTask() {
         Random random = new Random();
         int a = random.nextInt(20) + 1; // losowanie a 1-20
@@ -112,6 +142,12 @@ public class EasyGameActivity extends AppCompatActivity {
 
         correctAnswer = a + b; // zapisanie poprawnej odpowiedzi do correct answer
         textTask.setText(a + " + " + b + " = ?"); // pokazanie tresci zadania na ekraniep
+    }
+
+    private void startNextRound() {
+        startNewMonster();     // nowy potwór + full HP
+        generateEasyTask();    // nowe zadanie
+        startTimer();          // start czasu
     }
 
     private void checkAnswer() {
@@ -135,7 +171,7 @@ public class EasyGameActivity extends AppCompatActivity {
             points += POINTS_CORRECT;
             updatePointsUI();
 
-            dealDamageToMonster();
+            dealDamageToMonster(damagePerCorrect); // obrazenia za dobra odpowiedz (jak w Twoim Easy)
 
             Toast.makeText(this, "✅ Dobrze! +" + POINTS_CORRECT + " pkt", Toast.LENGTH_SHORT).show();
         } else {
@@ -155,29 +191,131 @@ public class EasyGameActivity extends AppCompatActivity {
         }
     }
 
-    private void dealDamageToMonster() {
-        monsterHp -= damagePerCorrect;
+    // jedna metoda na dmg (jak w Hard - przyjmuje damage jako parametr)
+    private void dealDamageToMonster(int damage) {
+        monsterHp -= damage;
         if (monsterHp < 0) monsterHp = 0;
 
         updateHpUI();
 
         if (monsterHp == 0) {
-            monsterDefeated();
+            onWin(); // wygrana
         }
     }
 
-    private void monsterDefeated() {
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+    // ATAK: -50 pkt, -20 HP, animacja, pomija zadanie, cooldown 15s (tak jak w Hard)
+    private void tryAttack() {
+        if (monsterHp <= 0) return; // jesli potwor nie zyje to nie ma ataku
+
+        // jesli jest na cooldownie to informujemy uzytkownika
+        if (attackOnCooldown) {
+            Toast.makeText(this, "Atak dostępny za chwilę!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        // nie ma punktow wystarczajaco to nie ma ataku
+        if (points < ATTACK_COST) {
+            Toast.makeText(this, "Za mało punktów (potrzeba 50).", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // koszt ataku -50pkt
+        points -= ATTACK_COST;
+        updatePointsUI();
+
+        // animacja wybuchu
+        playExplosionAnimation();
+
+        // obrażenia zadane potworkowi
+        dealDamageToMonster(ATTACK_DAMAGE);
+
+        // pomiń bieżące zadanie i daj nowe + reset timera 15s (jeśli jeszcze żyje)
+        if (monsterHp > 0) {
+            editAnswer.setText("");
+            generateEasyTask();
+            startTimer();
+        }
+
+        // cooldown 15s
+        startAttackCooldown();
+    }
+
+    // animacja wybuchu po uzyciu przycisku ataku
+    private void playExplosionAnimation() {
+        if (imageExplosion == null) return;
+
+        imageExplosion.setVisibility(View.VISIBLE);
+
+        AnimationDrawable anim = (AnimationDrawable) imageExplosion.getDrawable();
+        anim.start();
+
+        // chowamy wybuch po krótkiej chwili
+        imageExplosion.postDelayed(() ->
+                imageExplosion.setVisibility(View.GONE), 800);
+    }
+
+    // blokada ataku na 15s (jak w Hard)
+    private void startAttackCooldown() {
+        stopAttackCooldown(); // jesli był cooldown to go zatrzymaj
+
+        attackOnCooldown = true; //zablokowanie ataku - ikona jest widoczna ale wygasnieta
+        btnAttack.setEnabled(false);
+        btnAttack.setAlpha(0.5f); // wyblakniety przycisk
+
+        // Timer, który po 15 sekundach odblokuje atak
+        attackCooldownTimer = new CountDownTimer(ATTACK_COOLDOWN_MS, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() { // Koniec cooldownu: odblokowanie ataku
+                attackOnCooldown = false;
+                btnAttack.setEnabled(true);
+                btnAttack.setAlpha(1f);
+                Toast.makeText(EasyGameActivity.this, "Atak znowu dostępny!", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
+    }
+
+    // jesli timer istnieje to go zatrzymaj (jak w Hard)
+    private void stopAttackCooldown() {
+        if (attackCooldownTimer != null) {
+            attackCooldownTimer.cancel();
+            attackCooldownTimer = null;
+        }
+        attackOnCooldown = false;  // ustawienie stanu jako atak dostępny
+    }
+
+    // wygrana - czyli pokanienie potwora i ma 0hp (jak w Hard)
+    private void onWin() {
+        // zatrzymanie timera zadania
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+
+        stopAttackCooldown(); // przy wygranej czyszczenie cooldown
+
+        // blokowanie przyciskow bo sa juz niepotrzebne
         btnOk.setEnabled(false);
         editAnswer.setEnabled(false);
+        btnAttack.setEnabled(false);
+        btnAttack.setAlpha(0.5f);
 
+        // komunikat w miejscu gdzie wyswietla sie zadanie matematyczne
         textTask.setText("WYGRANA! 🎉");
         textTimer.setText("0s");
 
-        Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_LONG).show();
+        // komunikat na dole ekranu
+        Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_SHORT).show();
+
+        //  po chwili start nowego potwora + nowe zadanie + timer
+        textTask.postDelayed(() -> {
+            startNewMonster();      // reset stworka
+            generateEasyTask();     // nowe działanie
+            startTimer();           // nowe 15s
+        }, NEXT_MONSTER_DELAY_MS);
     }
 
     // ====== UI ======
@@ -200,6 +338,12 @@ public class EasyGameActivity extends AppCompatActivity {
         btnOk.setEnabled(true);
         editAnswer.setEnabled(true);
 
+        // jesli atak nie jest na cooldownie to przy nowym zadaniu moze be byc dostepny
+        if (!attackOnCooldown) {
+            btnAttack.setEnabled(true);
+            btnAttack.setAlpha(1f);
+        }
+
         countDownTimer = new CountDownTimer(TIME_LIMIT_MS, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -214,6 +358,10 @@ public class EasyGameActivity extends AppCompatActivity {
 
                 btnOk.setEnabled(false);
                 editAnswer.setEnabled(false);
+
+                // po koncu czasu blokujemy tez atak
+                btnAttack.setEnabled(false);
+                btnAttack.setAlpha(0.5f);
             }
         }.start();
     }
@@ -224,5 +372,6 @@ public class EasyGameActivity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        stopAttackCooldown(); // po wyjsciu z gry czyscimy cooldown ataku
     }
 }

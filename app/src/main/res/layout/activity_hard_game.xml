@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
@@ -38,17 +39,19 @@
         app:layout_constraintBottom_toBottomOf="@id/textTimer" />
 
     <!-- punkty -->
+
+    <!-- zadanie -->
     <TextView
         android:id="@+id/textPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
         android:text="0 pkt"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- zadanie -->
     <TextView
         android:id="@+id/textTask"
         android:layout_width="wrap_content"
@@ -78,7 +81,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.6" />
 
-    <!-- OK (PNG 1:1) -->
+    <!-- OK  -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnOk"
         android:layout_width="231dp"
@@ -100,7 +103,7 @@
         app:layout_constraintStart_toStartOf="@id/editAnswer"
         app:layout_constraintTop_toBottomOf="@id/editAnswer" />
 
-    <!-- POTWÓR + WYBUCH (overlay) -->
+    <!-- POTWÓR + WYBUCH  -->
     <FrameLayout
         android:id="@+id/monsterContainer"
         android:layout_width="0dp"
@@ -114,6 +117,8 @@
         app:layout_constraintDimensionRatio="1:1">
 
         <!-- potwór -->
+
+        <!-- wybuch/strzał na wierzchu -->
         <ImageView
             android:id="@+id/imageMonsterHard"
             android:layout_width="match_parent"
@@ -122,7 +127,6 @@
             android:scaleType="fitCenter"
             android:src="@drawable/p33h" />
 
-        <!-- wybuch/strzał na wierzchu -->
         <ImageView
             android:id="@+id/imageExplosion"
             android:layout_width="match_parent"
@@ -135,19 +139,22 @@
 
     <!-- atak -->
 
-    <!-- powrót -->
+
     <ImageButton
         android:id="@+id/btnAttack"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_margin="16dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="636dp"
+        android:layout_width="136dp"
+        android:layout_height="123dp"
+
+        android:layout_marginTop="68dp"
+        android:adjustViewBounds="true"
         android:background="@android:color/transparent"
         android:contentDescription="@string/attack"
-        android:src="@drawable/attack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:padding="10dp"
+
+        android:scaleType="centerInside"
+        android:src="@drawable/atak"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressHp" />
 
     <ImageButton
         android:id="@+id/btnBack"
