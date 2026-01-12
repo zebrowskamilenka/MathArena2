@@ -143,7 +143,7 @@ public class HardGameActivity extends AppCompatActivity {
             Toast.makeText(this, "Wpisz odpowiedź!", Toast.LENGTH_SHORT).show();
             return;
         }
-       //próba zamiany tekstu na liczbę (gdyby ktoś wpisał np. "abc")
+       //próba zamiany tekstu na liczbę (gdyby ktoś wpisał np. abc)
         int userAnswer;
         try {
             userAnswer = Integer.parseInt(txt);
@@ -176,7 +176,7 @@ public class HardGameActivity extends AppCompatActivity {
         }
     }
 
-    // jedna metoda na dmg
+    //  metoda na dmg
     private void dealDamageToMonster(int damage) {
         // Odejmowanie HP (z zabezpieczeniem żeby nie spadło poniżej 0)
         monsterHp -= damage;
@@ -214,11 +214,10 @@ public class HardGameActivity extends AppCompatActivity {
 
         // pomiń bieżące zadanie i daj nowe + reset timera 15s (jeśli jeszcze żyje)
         if (monsterHp > 0) {
-            editAnswer.setText("");
-            generateHardTask();
-            startTimer();
+            editAnswer.setText("");// czyszczenie
+            generateHardTask(); //nowe zadanie
+            startTimer(); //nowy timer
         }
-
         // cooldown 15s
         startAttackCooldown();
     }
@@ -249,8 +248,8 @@ private void playExplosionAnimation() {
             @Override
             public void onFinish() { // Koniec cooldownu: odblokowanie ataku
                 attackOnCooldown = false;
-                btnAttack.setEnabled(true);
-                btnAttack.setAlpha(1f);
+                btnAttack.setEnabled(true); // przycisk ataku jest dostepny
+                btnAttack.setAlpha(1f); // przycisk ma pelna widocznosc
                 Toast.makeText(HardGameActivity.this, "Atak znowu dostępny!", Toast.LENGTH_SHORT).show();
             }
         }.start();

@@ -21,7 +21,7 @@ public class MediumGameActivity extends AppCompatActivity {
 
     // elementu ui z layoutu zdafiniowane w xml stringami
     private ImageView imageMonsterMedium; //stworek
-    private ImageView imageExplosion; // animacja wybuchu (overlay)
+    private ImageView imageExplosion; // animacja wybuchu
     private TextView textTask; //miejsce na zadanie
     private TextView textTimer;     // czas
     private TextView textPoints;    // punkty
@@ -148,7 +148,7 @@ public class MediumGameActivity extends AppCompatActivity {
         }
     }
 
-    // ====== ODPOWIEDŹ ======
+    //  ODPOWIEDŹ
 
     private void checkAnswer() {
         String txt = editAnswer.getText().toString().trim();
@@ -167,7 +167,7 @@ public class MediumGameActivity extends AppCompatActivity {
         }
 
         if (userAnswer == correctAnswer) {
-            // ✅ DOBRA ODPOWIEDŹ
+            // DOBRA ODPOWIEDŹ
             points += POINTS_CORRECT;
             updatePointsUI();
 
@@ -175,7 +175,7 @@ public class MediumGameActivity extends AppCompatActivity {
 
             Toast.makeText(this, "✅ Dobrze! +" + POINTS_CORRECT + " pkt", Toast.LENGTH_SHORT).show();
         } else {
-            // ❌ ZŁA ODPOWIEDŹ
+            // ZŁA ODPOWIEDŹ
             points -= POINTS_WRONG;
             if (points < 0) points = 0;
             updatePointsUI();
@@ -191,7 +191,7 @@ public class MediumGameActivity extends AppCompatActivity {
         }
     }
 
-    // jedna metoda na dmg (przyjmuje ile damage ma zadac)
+    // metoda na dmg
     private void dealDamageToMonster(int damage) {
         monsterHp -= damage;
         if (monsterHp < 0) monsterHp = 0;
@@ -264,6 +264,12 @@ public class MediumGameActivity extends AppCompatActivity {
         textTimer.setText("0s");
 
         Toast.makeText(this, "🎉 Pokonałaś potworka!", Toast.LENGTH_LONG).show();
+
+        imageMonsterMedium.postDelayed(() -> {
+            startNewMonster();
+            generateMediumTask();
+            startTimer();
+        }, 1200);
     }
 
     // ====== UI ======
@@ -301,13 +307,18 @@ public class MediumGameActivity extends AppCompatActivity {
                 btnOk.setEnabled(false);
                 editAnswer.setEnabled(false);
 
-                // po koncu czasu blokujemy tez atak (zeby bylo konsekwentnie)
+                // po koncu czasu blokujemy tez atak
                 btnAttack.setEnabled(false);
                 btnAttack.setAlpha(0.5f);
+                imageMonsterMedium.postDelayed(() -> {
+                    startNewMonster();
+                    generateMediumTask();
+                    startTimer();
+                }, 1200);
             }
         }.start();
     }
-
+// gdu zamkniemy aktywnosc strona nei dziela
     @Override
     protected void onDestroy() {
         super.onDestroy();
