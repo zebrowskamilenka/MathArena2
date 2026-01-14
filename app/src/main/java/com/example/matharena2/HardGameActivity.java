@@ -83,20 +83,20 @@ public class HardGameActivity extends AppCompatActivity {
         btnAttack = findViewById(R.id.btnAttack);
 
         // obsluga przycisku powrotu - przejscie do activityduficulty
-        btnBack.setOnClickListener(v -> {
+        btnBack.setOnClickListener(v -> { //reaguje na klikniecie przycisku
             startActivity(new Intent(HardGameActivity.this, DifficultyActivity.class));
             finish(); //zamkniecie HardGameActivity - jkaby gra skonczona i jak klikniesz znowu to nowa runde otwiera
         });
 
         // start gry
-        startNewMonster(); // ustawienie hp potyworka na maksa
+        startNewMonster(); // ustawienie hp potyworka na maksa, losowanie potworka, reset pola odpowiedzi
         generateHardTask(); // losowania działania tu mnożenia i zapisanie do correct answer
         startTimer(); // odliczanie timera od 15 w dol
 
         // przycisk okej ktory sprawdza czy odpwiedz jest poprawna
         btnOk.setOnClickListener(v -> checkAnswer());
 
-        // 5) atak - wykoananie ataku kosztujace 50 pkt
+        // atak - wykoananie ataku kosztujace 50 pkt
         btnAttack.setOnClickListener(v -> tryAttack());
     }
 
